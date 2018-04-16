@@ -1,0 +1,19 @@
+{
+  "name": "simple-storage-server",
+  "version": "1.0.0",
+  "description": "Server that supports storing/retrieving/deleting files on a per-user basis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevegcarpenter/simple-storage-server.git"
+  },
+  "author": "Steve Carpenter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stevegcarpenter/simple-storage-server/issues"
+  },
+  "homepage": "https://github.com/stevegcarpenter/simple-storage-server#readme"
+}
