@@ -19,6 +19,10 @@ describe('Auth Module', function () {
       expect(new Auth(mock)).toHaveProperty('password');
     });
 
+    it('Should have a compareHash property', () => {
+      expect(new Auth(mock)).toHaveProperty('compareHash');
+    });
+
     it('should be an instance of an Object', () => {
       expect(auth).toBeInstanceOf(Object);
     });
