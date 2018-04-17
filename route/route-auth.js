@@ -48,7 +48,7 @@ module.exports = router => {
     user.generatePasswordHash(pw)
       .then(newUser => newUser.save())
       .then(userRes => userRes.generateToken())
-      .then(token => res.status(201).json(token))
+      .then(token => res.status(204).json(token))
       .catch(err => errorHandler(err, res));
   });
 };
