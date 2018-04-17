@@ -5,6 +5,7 @@ const debug = require('debug')('http:route-auth');
 const Auth = require('../model/auth');
 const bodyParser = require('body-parser').json();
 const errorHandler = require('../lib/error-handler');
+const basicAuth = require('../lib/basic-auth-middleware');
 
 module.exports = router => {
   router.post('/register', bodyParser, (req, res) => {
@@ -47,8 +48,25 @@ module.exports = router => {
 
     user.generatePasswordHash(pw)
       .then(newUser => newUser.save())
-      .then(userRes => userRes.generateToken())
-      .then(token => res.status(204).json(token))
+      .then(() => res.sendStatus(204))
+      .catch(err => errorHandler(err, res));
+  });
+
+  router.post('/login', basicAuth, (req, res) => {
+    Auth.findOne({username: req.auth.username})
+      .then(user => {
+        debug(`#Auth.findOne: user: ${user}`);
+        return user
+          ? user.comparePasswordHash(req.auth.password)
+          : Promise.reject(new Error('Authorization Failed. User not found.'));
+      })
+      .then(user => {
+        delete req.headers.authorization;
+        delete req.auth.password;
+        return user;
+      })
+      .then(user => user.generateToken())
+      .then(token => res.status(200).json(token))
       .catch(err => errorHandler(err, res));
   });
 };
