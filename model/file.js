@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const debug = require('debug')('http:file');
 
 const File = mongoose.Schema({
-  name: {type: String, required: true},
+  name: {type: String, required: true, unique: true},
   userId: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'auth'},
   // objectKey and fileURI returned by AWS
   objectKey: {type: String, required: true, unique: true},
