@@ -2,11 +2,11 @@
 
 const Auth = require('../../model/auth.js');
 
-describe('Auth Module', function () {
+describe('Auth Module', () => {
   let mock = {username: 'steve', password: 'a;nmgoiwl;@#'};
   let auth = new Auth();
 
-  describe('#Auth Username', function () {
+  describe('#Auth Username', () => {
     it('Should have an _id property', () => {
       expect(auth).toHaveProperty('_id');
     });
