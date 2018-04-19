@@ -9,7 +9,7 @@ const debug = require('debug')('http:file');
 const uuid = require('uuid/v4');
 
 const File = mongoose.Schema({
-  name: {type: String, required: true, unique: true},
+  filename: {type: String, required: true},
   userId: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'auth'},
   // objectKey and fileURI returned by AWS
   objectKey: {type: String, required: true, unique: true},
@@ -37,7 +37,7 @@ File.statics.upload = function (req) {
         debug('Returned from upload!');
 
         let fileData = {
-          name: req.params.filename,
+          filename: req.params.filename,
           userId: req.user._id,
           fileURI: data.Location,
           objectKey: data.Key,
