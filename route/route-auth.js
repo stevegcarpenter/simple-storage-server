@@ -52,7 +52,7 @@ module.exports = router => {
       .catch(err => errorHandler(err, res));
   });
 
-  router.post('/login', basicAuth, (req, res) => {
+  router.get('/login', basicAuth, (req, res) => {
     Auth.findOne({username: req.auth.username})
       .then(user => {
         debug(`#Auth.findOne: user: ${user}`);
