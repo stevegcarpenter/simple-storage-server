@@ -6,9 +6,9 @@ const bearerAuth = require('../lib/bearer-auth-middleware');
 const errorHandler = require('../lib/error-handler');
 
 // Upload dependencies
-const tempDir = `${__dirname}/../temp`;
 const multer = require('multer');
-const upload = multer({dest: tempDir});
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 module.exports = router => {
   router.put('/files/:filename', bearerAuth, bodyParser, upload.single('file'),
