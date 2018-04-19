@@ -13,14 +13,17 @@ const upload = multer({dest: tempDir});
 module.exports = router => {
   router.put('/files/:filename', bearerAuth, bodyParser, upload.single('file'),
     (req, res) => {
-      File.upload(req)
+      File.findOne({ name: req.params.filename, userId: req.user._id })
+        .then(file => !file
+          ? File.upload(req)
+          : Promise.reject(new Error('Duplicate Key: File already exists.'))
+        )
         .then(fileData => new File(fileData).save())
         .then(file => res.status(201).json({Location: `/files/${file.name}`}))
         .catch(err => errorHandler(err, res));
     });
 
   router.get('/files/:filename?', bearerAuth, (req, res) => {
-    // TODO: Add Content-Length & Content-Type support
     // Get a single file
     if (req.params.filename) {
       return File.findOne({ name: req.params.filename, userId: req.user._id })
