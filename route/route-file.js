@@ -11,7 +11,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 module.exports = router => {
-  router.put('/files/:filename', bearerAuth, bodyParser, upload.single('file'),
+  router.post('/files/:filename', bearerAuth, bodyParser, upload.single('file'),
     (req, res) => {
       File.findOne({ filename: req.params.filename, userId: req.user._id })
         .then(file => !file
