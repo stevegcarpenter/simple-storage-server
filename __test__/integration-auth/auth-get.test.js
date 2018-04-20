@@ -12,7 +12,6 @@ describe('Auth POST', () => {
   afterAll(server.stop);
 
   describe('/login', () => {
-    afterAll(mocks.auth.removeAll);
     beforeAll(() => {
       return mocks.auth.createOne()
         .then(mockObj => this.mockObj = mockObj)
@@ -20,7 +19,6 @@ describe('Auth POST', () => {
           .auth(mockObj.user.username, mockObj.password)
           .then(res => this.response = res));
     });
-    // remove entries from database
     afterAll(mocks.auth.removeAll);
 
     describe('Valid', () => {
