@@ -27,7 +27,7 @@ describe('Files POST', () => {
     afterAll(mocks.file.removeAll);
 
     describe('Valid', () => {
-      it('should return a status of 201 (CREATED) on success', () => {
+      it('should respond with a status of 201 (CREATED) on success', () => {
         expect(this.response.status).toEqual(201);
       });
 
@@ -57,6 +57,23 @@ describe('Files POST', () => {
           .set('Authorization', `Bearer ${this.mockObj.token}`)
           .attach('file', this.fileData.ffilepath)
           .catch(err => expect(err.status).toEqual(409));
+      });
+
+      it('should respond with 403 (FORBIDDEN) status when a file is uploaded without a token', () => {
+        return mocks.file.createOne()
+          .then(fileData => superagent.post(`${ENDPOINT_FILES}/${fileData.filename}`)
+            .attach('file', fileData.ffilepath)
+          )
+          .catch(err => expect(err.status).toEqual(403));
+      });
+
+      it('should respond with 403 (FORBIDDEN) status when a file is uploaded with an invalid token', () => {
+        return mocks.file.createOne()
+          .then(fileData => superagent.post(`${ENDPOINT_FILES}/${fileData.filename}`)
+            .set('Authorization', `Bearer lksjdifoknwmeoknoewriguh90243kno4tnklwkn34toi34nlknsd`)
+            .attach('file', fileData.ffilepath)
+          )
+          .catch(err => expect(err.status).toEqual(403));
       });
     });
   });
