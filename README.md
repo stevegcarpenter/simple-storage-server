@@ -1,26 +1,27 @@
 ```
-   _____ _                 _        ______ _ _         _____ _
-  / ____(_)               | |      |  ____(_) |       / ____| |
- | (___  _ _ __ ___  _ __ | | ___  | |__   _| | ___  | (___ | |_ ___  _ __ __ _  __ _  ___
-  \___ \| | '_ ` _ \| '_ \| |/ _ \ |  __| | | |/ _ \  \___ \| __/ _ \| '__/ _` |/ _` |/ _ \
-  ____) | | | | | | | |_) | |  __/ | |    | | |  __/  ____) | || (_) | | | (_| | (_| |  __/
- |_____/|_|_| |_| |_| .__/|_|\___| |_|    |_|_|\___| |_____/ \__\___/|_|  \__,_|\__, |\___|
-                    | |                                                          __/ |
-                    |_|                                                         |___/
+   _____ _                 _         _____ _                                _____
+  / ____(_)               | |       / ____| |                              / ____|
+ | (___  _ _ __ ___  _ __ | | ___  | (___ | |_ ___  _ __ __ _  __ _  ___  | (___   ___ _ ____   _____ _ __
+  \___ \| | '_ ` _ \| '_ \| |/ _ \  \___ \| __/ _ \| '__/ _` |/ _` |/ _ \  \___ \ / _ \ '__\ \ / / _ \ '__|
+  ____) | | | | | | | |_) | |  __/  ____) | || (_) | | | (_| | (_| |  __/  ____) |  __/ |   \ V /  __/ |
+ |_____/|_|_| |_| |_| .__/|_|\___| |_____/ \__\___/|_|  \__,_|\__, |\___| |_____/ \___|_|    \_/ \___|_|
+                    | |                                        __/ |
+                    |_|                                       |___/
 ```
 
 This is a basic implementation of a RESTful API for simple file storage. It allows users to
 register for an account and sign in to get a Bearer authorization token which is required
 for uploading, fetching, and deleting files. The files are all stored in an Amazon AWS S3
 bucket, so it is necessary for users to have an AWS account with correct credentials and a
-remote bucket to store files in.
+remote bucket to store files in. Files are all stored in the S3 bucket on a per-user basis
+so there are no issues with collisions when different users upload identical files.
 
 Users
 - POST - `/register` - Create an account with username, password, and email address
-- POST - `/login` - Sign into account to receive back a token
+- GET - `/login` - Sign into account to receive back a token
 
 Files
-- PUT - `/files/<filename>` - Upload a file to the users personal storage
+- POST - `/files/<filename>` - Upload a file to the users personal storage
 - GET - `/files/:<filename>?` - Get a single file or a list of all files owned by the user
 - DELETE - `/files/<filename>` - Delete a single file
 
