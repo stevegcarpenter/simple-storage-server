@@ -17,7 +17,7 @@ describe('Auth POST', () => {
     afterAll(mocks.auth.removeAll);
 
     describe('Valid', () => {
-      it('should return a 204 status', () => {
+      it('should return a 204 (NO CONTENT) status on successful registration', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'fakeuser1',
@@ -32,7 +32,7 @@ describe('Auth POST', () => {
     });
 
     describe('Invalid', () => {
-      it('should respond with a 404 status if a fake path is given', () => {
+      it('should respond with a 404 (NOT FOUND) status if a fake path is given', () => {
         return superagent.post(`${ENDPOINT_REGISTER}/fakepath`)
           .send({
             username: 'fakeusername',
@@ -42,19 +42,31 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(404));
       });
 
-      it('should respond with a content-type application/json on 400 failure', () => {
+      it('should respond with a 409 (CONFLICT) status if the registration crdentials are taken already', () => {
+        mocks.auth.createOne()
+          .then(mockObj => superagent.post(`${ENDPOINT_REGISTER}`)
+            .send({
+              username: mockObj.username,
+              password: mockObj.password,
+              email: mockObj.email,
+            })
+            .catch(err => expect(err.status).toEqual(409))
+          );
+      });
+
+      it('should respond with a content-type application/json on 400 (BAD REQUEST) failure', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .catch(err => {
             expect(err.response.headers['content-type']).toMatch(/application\/json/i);
           });
       });
 
-      it('should respond with a 400 status if no body was provided', () => {
+      it('should respond with a 400 (BAD REQUEST) status if no body was provided', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if no username was provided', () => {
+      it('should respond with a 400 (BAD REQUEST) status if no username was provided', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             password: 'fakepassword',
@@ -63,7 +75,7 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if no password was provided', () => {
+      it('should respond with a 400 (BAD REQUEST) status if no password was provided', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'fakeusername',
@@ -72,7 +84,7 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if no email was provided', () => {
+      it('should respond with a 400 (BAD REQUEST) status if no email was provided', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'fakeusername',
@@ -81,7 +93,7 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if username is < 3 characters', () => {
+      it('should respond with a 400 (BAD REQUEST) status if username is < 3 characters', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'ab',
@@ -91,7 +103,7 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if username is > 20 characters', () => {
+      it('should respond with a 400 (BAD REQUEST) status if username is > 20 characters', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'abcdefghijklmnopqrstuvwxyz',
@@ -101,7 +113,7 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if username not alphanumeric', () => {
+      it('should respond with a 400 (BAD REQUEST) status if username not alphanumeric', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'abc%^)',
@@ -111,7 +123,7 @@ describe('Auth POST', () => {
           .catch(err => expect(err.status).toBe(400));
       });
 
-      it('should respond with a 400 status if the password is < 8 characters', () => {
+      it('should respond with a 400 (BAD REQUEST) status if the password is < 8 characters', () => {
         return superagent.post(ENDPOINT_REGISTER)
           .send({
             username: 'fakeusername',
