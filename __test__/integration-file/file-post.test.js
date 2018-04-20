@@ -39,6 +39,16 @@ describe('Files POST', () => {
         expect(this.response.body['Location'])
           .toEqual(`/files/${this.fileData.filename}`);
       });
+
+      it('should allow different users to upload the same file without overwriting', () => {
+        return mocks.auth.createOne()
+          .then(mockObj2 => superagent.post(`${ENDPOINT_FILES}/${this.fileData.filename}`)
+            .set('Authorization', `Bearer ${mockObj2.token}`)
+            .attach('file', this.fileData.ffilepath)
+          )
+          .then(res => expect(res.status).toEqual(201))
+          .catch(console.error);
+      });
     });
 
     describe('Invalid', () => {
