@@ -1,7 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-const del = require('del');
 const path = require('path');
 const aws3 = require('../lib/aws-s3');
 const mongoose = require('mongoose');
@@ -28,7 +26,7 @@ File.statics.upload = function (req) {
     let params = {
       ACL: 'public-read',
       Bucket: process.env.AWS_BUCKET,
-      Key: `files/${uuid()}${path.extname(req.file.originalname)}`,
+      Key: `user-${req.user._id}/files/${uuid()}${path.extname(req.file.originalname)}`,
       Body: req.file.buffer,
     };
 
