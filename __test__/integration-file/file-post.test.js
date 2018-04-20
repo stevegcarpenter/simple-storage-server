@@ -16,9 +16,9 @@ describe('Files POST', () => {
         .then(mockObj => this.mockObj = mockObj)
         .then(() => mocks.file.createOne())
         .then(fileData => this.fileData = fileData)
-        .then(fileData => superagent.post(`${ENDPOINT_FILES}/${fileData.filename}`)
+        .then(fileData => superagent.post(`${ENDPOINT_FILES}/${this.fileData.filename}`)
           .set('Authorization', `Bearer ${this.mockObj.token}`)
-          .attach('file', fileData.ffilepath)
+          .attach('file', this.fileData.ffilepath)
         )
         .then(res => this.response = res)
         .catch(console.error);
