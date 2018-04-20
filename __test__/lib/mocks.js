@@ -16,11 +16,13 @@ const mocks = module.exports = {};
 mocks.auth = {};
 mocks.auth.createOne = () => {
   let result = {};
+  result.username = faker.lorem.words(10).replace(/\s/g,'').slice(0, 10);
   result.password = faker.internet.password(10 /* length */);
+  result.email = faker.internet.email();
 
   return new Auth({
-    username: faker.lorem.words(10).replace(/\s/g,'').slice(0, 10),
-    email: faker.internet.email(),
+    username: result.username,
+    email: result.email,
   })
     .generatePasswordHash(result.password)
     .then(user => result.user = user)
