@@ -8,6 +8,7 @@
                     | |                                        __/ |
                     |_|                                       |___/
 ```
+[![Build Status](https://travis-ci.org/stevegcarpenter/simple-storage-server.svg?branch=master)](https://travis-ci.org/stevegcarpenter/simple-storage-server)
 
 This is a basic implementation of a RESTful API for simple file storage. It allows users to
 register for an account and sign in to get a Bearer authorization token which is required
