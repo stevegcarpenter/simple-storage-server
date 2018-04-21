@@ -362,4 +362,4 @@ X-Powered-By: Express
 ```
 
 ## Author
-- ![Steven Carpenter](https://avatars3.githubusercontent.com/u/14958992?s=400&v=4) <br> [Steve Carpenter](https://www.linkedin.com/in/carpentersteven/)
+![Steven Carpenter](https://avatars3.githubusercontent.com/u/14958992?s=400&v=4) <br> [Steve Carpenter](https://www.linkedin.com/in/carpentersteven/)
