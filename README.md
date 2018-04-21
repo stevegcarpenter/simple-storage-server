@@ -50,11 +50,157 @@ AWS_SECRET_ACCESS_KEY='<your-secret-access-key>'
 ```
 
 ## Using the API
-
 Once all the setup is complete, it is possible to run all the unit and route tests by executing
 `npm run test` in the terminal within the project directory. This will report on any bugs and
 display overall coverage statistics for tests. The remaining portion of this section details how
 to use [HTTPie](https://httpie.org/) to interact with the RESTful API.
+
+## Testing
+This project uses continuous integration via Travis-CI which can be accessed
+using the Build tag above, but once the files are cloned to a local directory
+and the respective `__test__/lib/.test.env` file has been populated with the
+appropriate AWS Keys and bucket information users can run the full test suite
+by executing `npm run test`. This is a current output of all unit and integration
+tests for the project.
+```
+ PASS  __test__/integration-auth/auth-get.test.js (9.925s)
+  Auth POST
+    /login
+      Valid
+        ✓ should respond with a status of 200 for a valid login (8ms)
+        ✓ should respond with a Content-Type of application/json (1ms)
+        ✓ should successfully return back a token string in the body (3ms)
+        ✓ should return a JSON Web Token in the response body (3ms)
+      Invalid
+        ✓ should respond with a 403 if an invalid password was given (269ms)
+        ✓ should respond with a 403 if an username was given (10ms)
+        ✓ should respond with Content-Type application/json on 403 error (8ms)
+        ✓ should respond with a 403 (NOT AUTHORIZED) status given missing username (5ms)
+        ✓ should respond with a 403 (NOT AUTHORIZED) status given missing password (4ms)
+        ✓ should respond with a 403 (NOT AUTHORIZED) status given malformed user headers (4ms)
+
+  console.log lib/server.js:27
+    listening on 4000
+
+ PASS  __test__/integration-file/file-get.test.js
+  Files GET
+    /files/:filename
+      Valid
+        ✓ should respond with a status of 200 (OK) on success (3ms)
+        ✓ should respond with a Content-Type of application/json (1ms)
+      Invalid
+        ✓ should respond with a 404 (NOT FOUND) status if a user tries to get a non-existent file (12ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a user tries to get a file without a token (5ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a user tries to get a file with an invalid token (5ms)
+        ✓ should respond with 404 (NOT FOUND) if a user tries to fetch another users file (277ms)
+    /files
+      Valid
+        ✓ should respond with a status of 200 (OK) on successful retrieval of the users files
+        ✓ should respond with a Content-Type of application/json (1ms)
+        ✓ should have returned an array of the 2 files this user uploaded (1ms)
+        ✓ should return no filenames for a new user that doesn't own any of the first users files (268ms)
+      Invalid
+        ✓ should respond with 403 (FORBIDDEN) status when a user tries to get files without a token (5ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a user tries to get files with an invalid token (4ms)
+
+  console.log lib/server.js:27
+    listening on 4000
+
+ PASS  __test__/integration-file/file-post.test.js
+  Files POST
+    /files/:filename
+      Valid
+        ✓ should respond with a status of 201 (CREATED) on success (3ms)
+        ✓ should respond with a Content-Type of application/json (1ms)
+        ✓ should return the name of the file that was uploaded (1ms)
+        ✓ should allow different users to upload the same file without overwriting (450ms)
+      Invalid
+        ✓ should respond with a 409 (CONFLICT) status if a user tries to upload the same file twice (18ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a file is uploaded without a token (13ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a file is uploaded with an invalid token (9ms)
+
+  console.log lib/server.js:27
+    listening on 4000
+
+ PASS  __test__/integration-file/file-delete.test.js
+  Files DELETE
+    /files/:filename
+      Valid
+        ✓ should respond with a status of 204 (NO CONTENT) on successful deletion of a file (3ms)
+      Invalid
+        ✓ should respond with a 404 (NOT FOUND) status if a user tries to delete a non-existent file (13ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a user tries to delete a file without a token (4ms)
+        ✓ should respond with 403 (FORBIDDEN) status when a user tries to delete a file with an invalid token (4ms)
+        ✓ should respond with 404 (NOT FOUND) if a user tries to delete another users file (270ms)
+
+  console.log lib/server.js:27
+    listening on 4000
+
+ PASS  __test__/integration-auth/auth-post.test.js
+  Auth POST
+    /register
+      Valid
+        ✓ should return a 204 (NO CONTENT) status on successful registration (582ms)
+      Invalid
+        ✓ should respond with a 404 (NOT FOUND) status if a fake path is given (14ms)
+        ✓ should respond with a 409 (CONFLICT) status if the registration crdentials are taken already (2ms)
+        ✓ should respond with a content-type application/json on 400 (BAD REQUEST) failure (6ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if no body was provided (5ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if no username was provided (6ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if no password was provided (5ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if no email was provided (4ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if username is < 3 characters (8ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if username is > 20 characters (4ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if username not alphanumeric (5ms)
+        ✓ should respond with a 400 (BAD REQUEST) status if the password is < 8 characters (4ms)
+
+ PASS  __test__/unit/file.test.js
+  File Module
+    ✓ Should have an _id property (3ms)
+    ✓ Should have a filename property (4ms)
+    ✓ Should have a userId property (2ms)
+    ✓ Should have a objectKey property (2ms)
+    ✓ Should have a fileURI property (1ms)
+    ✓ should be an instance of an Object (1ms)
+
+ PASS  __test__/unit/auth.test.js
+  Auth Module
+    ✓ Should have an _id property (3ms)
+    ✓ Should have a username property (3ms)
+    ✓ Should have a password property (1ms)
+    ✓ Should have a compareHash property (1ms)
+    ✓ should be an instance of an Object (1ms)
+
+ PASS  __test__/unit/error-handler.test.js
+  Error Handler
+    ✓ should return an error 409 for any error containing Duplicate Key (3ms)
+    ✓ should return an error 404 for any error containing ObjectId Failed, ENOENT, or path error (2ms)
+    ✓ should return an error 400 for any error containing Validation Error (1ms)
+    ✓ should return an error 500 for any other errors that occur (1ms)
+
+----------------------------|----------|----------|----------|----------|-------------------|
+File                        |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
+----------------------------|----------|----------|----------|----------|-------------------|
+All files                   |    93.36 |    84.38 |    90.91 |    94.61 |                   |
+ lib                        |    92.31 |    78.79 |    89.47 |    94.19 |                   |
+  aws-s3.js                 |      100 |       50 |      100 |      100 |             10,16 |
+  basic-auth-middleware.js  |    93.33 |     87.5 |      100 |    93.33 |                 8 |
+  bearer-auth-middleware.js |    86.96 |       75 |       75 |       95 |                30 |
+  error-handler.js          |      100 |      100 |      100 |      100 |                   |
+  server.js                 |    90.91 |       50 |    85.71 |    90.91 |          18,24,38 |
+ model                      |    90.91 |     62.5 |    88.89 |    92.59 |                   |
+  auth.js                   |    89.66 |       75 |    83.33 |    92.86 |             21,48 |
+  file.js                   |    92.31 |       50 |      100 |    92.31 |             20,22 |
+ route                      |    96.92 |      100 |     93.1 |    96.88 |                   |
+  route-auth.js             |    97.14 |      100 |    90.91 |    97.14 |                52 |
+  route-file.js             |    96.67 |      100 |    94.44 |    96.55 |                42 |
+----------------------------|----------|----------|----------|----------|-------------------|
+Test Suites: 8 passed, 8 total
+Tests:       61 passed, 61 total
+Snapshots:   0 total
+Time:        21.073s, estimated 22s
+Ran all test suites.
+```
 
 ### Create an account
 For creating an account, there are a few requirements.
@@ -216,4 +362,4 @@ X-Powered-By: Express
 ```
 
 ## Author
-- [Steven Carpenter](https://avatars3.githubusercontent.com/u/14958992?s=400&v=4) | [Linked In](https://www.linkedin.com/in/carpentersteven/)
+- ![Steven Carpenter](https://avatars3.githubusercontent.com/u/14958992?s=400&v=4) <br> [Steve Carpenter](https://www.linkedin.com/in/carpentersteven/)
