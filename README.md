@@ -57,6 +57,12 @@ display overall coverage statistics for tests. The remaining portion of this sec
 to use [HTTPie](https://httpie.org/) to interact with the RESTful API.
 
 ### Create an account
+For creating an account, there are a few requirements.
+Usernames must be:
+- At least 3 characters and no more then 20 characters
+- Only alphanumeric
+Passwords must be:
+- At minimum 8 characters
 ```
 http POST :3000/register username=<desired-username> password=<desired-password> email=<your-email@domain.com>
 
@@ -72,13 +78,15 @@ ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
 X-Powered-By: Express
 ```
 
-### Login to get token
+### Login to get a token
+When logging in, a username and password must be specified as part of the
+authorization header. This can be done with HTTPie using the `-a` flag.
 ```
-http -a <username>:<password> POST :3000/login
+http -a <username>:<password> GET :3000/login
 
 Example:
 ========
-http -a steve:password POST :3000/login
+http -a steve:password GET :3000/login
 
 HTTP/1.1 200 OK
 Access-Control-Allow-Origin: *
@@ -93,13 +101,24 @@ X-Powered-By: Express
 ```
 
 ### Upload a file
+When uploading a file, the file needs to be sent as form data which is
+accomplished in HTTPie using the `-f` flag and specifying the file to be
+uploaded using `file@` followed by the full or relative filepath. Once the
+Bearer token provided has been validated and the user located in the database
+the file will be uploaded to the S3 bucket specified in the `.env` file.
+Following a successful upload, the file data is stored inside the MongoDB
+database and a 201 status is returned to the user. Different users are allowed
+to upload identical files since all the files are separated into their own
+namespace by user ids within the S3 bucket. Since this is a POST route, users
+are not allowed to overwrite files with pre-existing files. If they wish to
+upload a new copy the file must first be deleted using the DELETE route.
 ```
-http -f PUT :3000/files/<desired-filenamet> file@</path/to/file.ext> 'Authorization:Bearer
+http -f POST :3000/files/<desired-filenamet> file@</path/to/file.ext> 'Authorization:Bearer
 <token>'
 
 Example:
 ========
-http -f PUT :3000/files/baz.jpg file@~/Downloads/2.jpg 'Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjkyMmFiYzZiYjAyYzI3NjE5YTA1YjA3NmM0OGJiNTk4MWUwODM3Y2UwOTQ0OGIxOGQ0ODVjNDQ2YzIyZmI5OTc5YjMwN2NmZjUwYTZkMzYwZWZhMjM3NmNlZmFlNWQ1ZWQ0MTUxODEwZTI2ODhlMzkwYjA3NjYwNDdmNTIwNTMxIiwiaWF0IjoxNTI0MDMwMTY0fQ.RpYsuVoH_JHLyls0D9c95C1h6LlBqDnJgU72alY1Ma0'
+http -f POST :3000/files/baz.jpg file@~/Downloads/2.jpg 'Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjkyMmFiYzZiYjAyYzI3NjE5YTA1YjA3NmM0OGJiNTk4MWUwODM3Y2UwOTQ0OGIxOGQ0ODVjNDQ2YzIyZmI5OTc5YjMwN2NmZjUwYTZkMzYwZWZhMjM3NmNlZmFlNWQ1ZWQ0MTUxODEwZTI2ODhlMzkwYjA3NjYwNDdmNTIwNTMxIiwiaWF0IjoxNTI0MDMwMTY0fQ.RpYsuVoH_JHLyls0D9c95C1h6LlBqDnJgU72alY1Ma0'
 
 HTTP/1.1 201 Created
 Access-Control-Allow-Origin: *
@@ -116,6 +135,11 @@ X-Powered-By: Express
 ```
 
 ### Get list of all uploaded filenames
+Making a GET request to the `/files` endpoint without a specific filename will
+fetch all the files associated with this one user from the database. It then
+returns this list as shown below. Since the files are all separated by user, a
+GET request from one user will not return any files from another users personal
+filesystem.
 ```
 http GET :3000/files 'Authorization:Bearer <token>'
 
@@ -140,6 +164,9 @@ X-Powered-By: Express
 ```
 
 ### Get a single file
+Making a GET request with a specific file will trigger an actual download of
+the file from the AWS S3 bucket. Given that the users token is valid, it will
+return this file with a 200 status.
 ```
 http GET :3000/files/<filename> 'Authorization:Bearer <token>'
 
@@ -169,6 +196,10 @@ X-Powered-By: Express
 ```
 
 ### Delete a file
+Any file associated with a particular user can be deleted only by that user by
+using the DELETE route and the specific filename. No user is allowed to delete
+files from any other users account which is verified using the JSON web token
+at time of the request.
 ```
 http DELETE :3000/files/<filename> 'Authorization:Bearer <token>'
 
@@ -184,5 +215,5 @@ ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
 X-Powered-By: Express
 ```
 
-## Authors
-- Steve Carpenter
+## Author
+- [Steven Carpenter](https://avatars3.githubusercontent.com/u/14958992?s=400&v=4) | [Linked In](https://www.linkedin.com/in/carpentersteven/)
